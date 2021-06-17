@@ -9,6 +9,19 @@ import AppointmentInfo from "./components/AppointmentInfo"
 function App() {
 
 let [appointmentList, setAppointmentList] = useState([]);
+let [query, setQuery] = useState("");
+
+const filteredAppointments = appointmentList.filter(
+  item => {
+    return (
+      item.petName.toLowerCase().includes(query.toLowerCase()) ||
+      item.ownerName.toLowerCase().includes(query.toLowerCase()) ||
+      item.aptNotes.toLowerCase().includes(query.toLowerCase())
+      )
+  }
+)
+
+
 
 const fetchData = useCallback(() => {
   fetch('./data.json')
@@ -29,17 +42,18 @@ useEffect(() => {
   <h1 className="text-5xl">
     <BiArchive className="inline-block text-red-200"/>Your Appointments</h1>
     <AddAppointment />
-    <Search />
+    <Search query={query}
+      onQueryChange={myQuery => setQuery(myQuery)} />
 
 <ul className="divide-y divide-gray-200">
  
-    {appointmentList
+    {filteredAppointments
      .map(appointment =>(
       <AppointmentInfo key={appointment.id}
       appointment={appointment} 
       onDeleteAppointment={
         appointmentId => 
-        setAppointmentList(appointmentList.filter(appointment => appointment.id != appointmentId))
+        setAppointmentList(appointmentList.filter(appointment => appointment.id !== appointmentId))
       }/>
      ))
     
